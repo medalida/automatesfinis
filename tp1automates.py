@@ -13,8 +13,13 @@ import pdb # for debugging
 ##################
 
 def is_deterministic(a:'Automaton')->bool:
-  #TODO implement!
+  for state in a.statesdict:
+    for transition in state:
+      if len(transition) > 1:
+        return False
+    
   return True
+    
   
 ##################
   
