@@ -23,29 +23,49 @@ def is_deterministic(a:Automaton)->bool:
 ##################
   
 def recognizes(a:Automaton, word:str)->bool:
-  if not is_deterministic(a):
-    a = determinise(a)
-  
-  return tp1_recognizes(a)
+
+  return tp1_recognizes(a, word)
   
 ##################
 
 def determinise(a:Automaton):
-  a_determinised = Automaton(a.name + '_determinised')
-  for stateIndex in a.statesdict:
+  
+  for stateIndex in a.statesdict.copy().keys():
     for letter in a.statesdict[stateIndex].transitions:
       if '%' == letter:
         for TransState in list(a.statesdict[stateIndex].transitions['%']):
           for TransLetter in TransState.transitions:
             for TransState2 in list(TransState.transitions[TransLetter]):
-              a_determinised.add_transition(stateIndex, TransLetter, TransState2)
-      else:
-        for index in list(a.statesdict[stateIndex].transitions[letter]):
-          a_determinised.add_transition(stateIndex, letter, index.name)
-    if a.statesdict[stateIndex].is_accept:
-      a_determinised.statesdict[stateIndex].make_accept()
+              a.remove_transition(stateIndex,"%",TransState.name)
+              a.add_transition(stateIndex, TransLetter, TransState2.name)
+              if TransState.is_accept:
+                a.statesdict[stateIndex].make_accept()
 
-  return a_determinised
+  not_determinise = True
+  while(not_determinise):
+    not_determinise = False
+    for stateIndex in a.statesdict.copy().keys():
+      for letter in a.statesdict[stateIndex].transitions:
+        states = a.statesdict[stateIndex].transitions[letter].copy()
+        if len(list(a.statesdict[stateIndex].transitions[letter])) > 1:
+          not_determinise = True
+          new_states = set()
+          for state in list(states):
+            new_states.add(state.name)
+          
+
+          for state in list(states):
+            for trans_lettre in state.transitions:
+              for trans_state in list(state.transitions[trans_lettre]):
+                a.add_transition(str(new_states), trans_lettre, trans_state.name)
+                if(state.is_accept):
+                  a.make_accept(str(new_states))
+          a.add_transition(stateIndex, letter, str(new_states))
+          for state in states:
+            print(a.alphabet)
+            a.remove_transition(stateIndex, letter, state.name)
+    a.remove_unreachable()
+
   
 ################## 
 

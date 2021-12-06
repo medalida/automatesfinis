@@ -13,23 +13,34 @@ import pdb # for debugging
 ##################
 
 def is_deterministic(a:'Automaton')->bool:
+  
   for stateIndex in a.statesdict:
-    if '%' in a.statesdict[stateIndex].transitions:
-      return False
-    for transition in a.statesdict[stateIndex].transitions:
-      if len(a.statesdict[stateIndex].transitions[transition])!=1:
+    for letter in a.statesdict[stateIndex].transitions:
+      if len(a.statesdict[stateIndex].transitions[letter]) > 1:
         return False
+      elif '%' in a.statesdict[stateIndex].transitions and len(a.statesdict[stateIndex].transitions['%']) > 0:
+        return False
+        
   return True
     
   
 ##################
   
 def recognizes(a:'Automaton', word:str)->bool:
+
   currentStateIndex = a.initial.name
+  word = word.replace("%","")
+  
+  if word == "" and a.initial.is_accept:
+    return True
+  elif word == "" and not a.initial.is_accept:
+    return False
+
   for letter in word:
     if letter not in a.statesdict[currentStateIndex].transitions.keys():
       return False
     currentStateIndex = list(a.statesdict[currentStateIndex].transitions[letter])[0].name
+  
   if a.statesdict[currentStateIndex].is_accept:
     return True
   return False 
