@@ -65,6 +65,7 @@ def determinise(a:Automaton):
             print(a.alphabet)
             a.remove_transition(stateIndex, letter, state.name)
     a.remove_unreachable()
+    a.to_graphviz("test/"+a.name+"_det.gv")
 
   
 ################## 

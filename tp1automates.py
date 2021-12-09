@@ -20,7 +20,7 @@ def is_deterministic(a:'Automaton')->bool:
         return False
       elif '%' in a.statesdict[stateIndex].transitions and len(a.statesdict[stateIndex].transitions['%']) > 0:
         return False
-        
+
   return True
     
   
@@ -43,7 +43,7 @@ def recognizes(a:'Automaton', word:str)->bool:
   
   if a.statesdict[currentStateIndex].is_accept:
     return True
-  return False 
+  return False
 
 ##################
 
@@ -52,13 +52,13 @@ if __name__ == "__main__" :
     usagestring = "Usage: {} <automaton-file.af> <word-to-recognize>"
     error(usagestring.format(sys.argv[0]))
 
-  automatonfile = sys.argv[1]  
+  automatonfile = sys.argv[1]
   word = sys.argv[2]
 
   a = Automaton("dummy")
   a.from_txtfile(automatonfile)
 
-  if not is_deterministic(a) :
+  if not is_deterministic(a):
     print("ERROR")
   elif recognizes(a, word):
     print("YES")
