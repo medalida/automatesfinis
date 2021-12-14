@@ -8,22 +8,79 @@ import sys
 import pdb # for debugging
 
 ##################
+def nouvel_etat(a1:Automaton)->str:
+    """Trouve un nouveau nom d'état supérieur au max dans `a1`"""
+    maxstate = -1
+    for a in a1.states :
+        try : maxstate = max(int(a),maxstate)
+        except ValueError: pass # ce n'est pas un entier, on ignore
+    return str(maxstate+1)
+
+
 
 def kleene(a1:Automaton)->Automaton:
-  # TODO: implement Kleene's star
-  return a1 
+
+  nom_nouvel_etat = nouvel_etat(a1)
+  a1star = a1.deepcopy()
+  a1star.name = a1.name + "Start"
+  a1star.add_transition(nom_nouvel_etat, EPSILON ,a1.initial.name)
+  a1star.initial = a1star.statesdict[nom_nouvel_etat]
+  a1star.make_accept(nom_nouvel_etat)
+  for state in a1.acceptstates:
+    a1star.add_transition(state, EPSILON, a1.initial.name)
+  
+  return a1star
+  
+ 
 
 ##################
 
 def concat(a1:Automaton, a2:Automaton)->Automaton:
-  # TODO: implement concatenation
-  return a1 
+
+  a1_a2 = a1.deepcopy()
+  a1_a2.name = a1.name + "_start_" + a2.name
+  a2 = a2.deepcopy()
+  
+  nom_nouvel_etat = nouvel_etat(a1_a2)
+  for s in a2.states:
+    if s in a1_a2.states:
+      a2.rename_state(s,str(nom_nouvel_etat)) 
+      nom_nouvel_etat = str(int(nom_nouvel_etat) + 1)
+
+  for (s,a,d) in a2.transitions:
+    a1_a2.add_transition(s,a,d)
+    print(s+" "+a+" "+d)
+  a1_a2.make_accept(a2.acceptstates)  
+
+  for ac in a1.acceptstates:
+    a1_a2.add_transition(ac,EPSILON,a2.initial.name)
+  a1_a2.make_accept(a1.acceptstates, accepts=False)
+  
+  return a1_a2
+ 
 
 ##################
 
 def union(a1:Automaton, a2:Automaton)->Automaton:
-  # TODO: implement union
-  return a1 
+
+  a1_or_a2 = a1.deepcopy()
+  a1_or_a2.name = a1.name + "_or_" + a2.name
+
+  nom_nouvel_etat = nouvel_etat(a1_or_a2)
+  a2 = a2.deepcopy()
+  for s in a2.states :
+      if s in a1_or_a2.states :
+          a2.rename_state(s,nom_nouvel_etat)
+          nom_nouvel_etat = str(int(nom_nouvel_etat) + 1)
+  for (s,a,d) in a2.transitions:
+      a1_or_a2.add_transition(s,a,d)
+  a1_or_a2.make_accept(a2.acceptstates)    
+  
+  a1_or_a2.add_transition(nom_nouvel_etat,EPSILON,a1.initial.name)
+  a1_or_a2.add_transition(nom_nouvel_etat,EPSILON,a2.initial.name)
+  a1_or_a2.initial = a1_or_a2.statesdict[nom_nouvel_etat]
+
+  return a1_or_a2 
 
 ##################
 
