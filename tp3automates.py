@@ -22,13 +22,12 @@ def kleene(a1:Automaton)->Automaton:
 
   nom_nouvel_etat = nouvel_etat(a1)
   a1star = a1.deepcopy()
-  a1star.name = a1.name + "Start"
+  a1star.name = a1.name + "^"
   a1star.add_transition(nom_nouvel_etat, EPSILON ,a1.initial.name)
   a1star.initial = a1star.statesdict[nom_nouvel_etat]
-  a1star.make_accept(nom_nouvel_etat)
   for state in a1.acceptstates:
     a1star.add_transition(state, EPSILON, a1.initial.name)
-  
+  a1star.make_accept(nom_nouvel_etat)
   return a1star
   
  
@@ -36,20 +35,16 @@ def kleene(a1:Automaton)->Automaton:
 ##################
 
 def concat(a1:Automaton, a2:Automaton)->Automaton:
-
   a1_a2 = a1.deepcopy()
-  a1_a2.name = a1.name + "_start_" + a2.name
+  a1_a2.name =  a1.name + "." + a2.name
   a2 = a2.deepcopy()
-  
-  nom_nouvel_etat = nouvel_etat(a1_a2)
+  nom_nouvel_etat = max(int(nouvel_etat(a1_a2)),int(nouvel_etat(a2)))
   for s in a2.states:
     if s in a1_a2.states:
       a2.rename_state(s,str(nom_nouvel_etat)) 
       nom_nouvel_etat = str(int(nom_nouvel_etat) + 1)
-
   for (s,a,d) in a2.transitions:
     a1_a2.add_transition(s,a,d)
-    print(s+" "+a+" "+d)
   a1_a2.make_accept(a2.acceptstates)  
 
   for ac in a1.acceptstates:
@@ -64,10 +59,9 @@ def concat(a1:Automaton, a2:Automaton)->Automaton:
 def union(a1:Automaton, a2:Automaton)->Automaton:
 
   a1_or_a2 = a1.deepcopy()
-  a1_or_a2.name = a1.name + "_or_" + a2.name
-
-  nom_nouvel_etat = nouvel_etat(a1_or_a2)
+  a1_or_a2.name = a1.name + "+" + a2.name
   a2 = a2.deepcopy()
+  nom_nouvel_etat = max(nouvel_etat(a1_or_a2),nouvel_etat(a2))
   for s in a2.states :
       if s in a1_or_a2.states :
           a2.rename_state(s,nom_nouvel_etat)

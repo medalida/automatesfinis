@@ -1,0 +1,8 @@
+digraph finite_state_machine {
+  rankdir=LR;  
+  size="8,5"  label=""  node [shape = doublecircle]; "1";
+  node [shape = circle];
+  __I__ [label="", style=invis, width=0]
+  __I__ -> "0"
+  "0" -> "1" [label = ε];
+}

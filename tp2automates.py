@@ -29,43 +29,84 @@ def recognizes(a:Automaton, word:str)->bool:
 ##################
 
 def determinise(a:Automaton):
+
+  #remove EPDILONS
+  is_empty_word = True
+  while(is_empty_word):
+    is_empty_word = False
+    for stateIndex in a.statesdict:
+      for letter in a.statesdict[stateIndex].transitions.copy():
+        if letter == EPSILON and bool(a.statesdict[stateIndex].transitions[EPSILON]):
+          for TransState in a.statesdict[stateIndex].transitions[EPSILON].copy():
+            is_empty_word = True
+            a.remove_transition(stateIndex,EPSILON,TransState.name)
+            
+            for TransLetter in TransState.transitions:
+              for TransState2 in list(TransState.transitions[TransLetter]):
+                
+                if (stateIndex, TransLetter, TransState2.name) not in a.transitions:
+                  a.add_transition(stateIndex, TransLetter, TransState2.name)
+                if TransState.is_accept:
+                  a.statesdict[stateIndex].make_accept()
+  a.remove_unreachable()
   
-  for stateIndex in a.statesdict.copy().keys():
-    for letter in a.statesdict[stateIndex].transitions:
-      if '%' == letter:
-        for TransState in list(a.statesdict[stateIndex].transitions['%']):
-          for TransLetter in TransState.transitions:
-            for TransState2 in list(TransState.transitions[TransLetter]):
-              a.remove_transition(stateIndex,"%",TransState.name)
-              a.add_transition(stateIndex, TransLetter, TransState2.name)
-              if TransState.is_accept:
-                a.statesdict[stateIndex].make_accept()
+  # seconde step of determinisation
 
-  not_determinise = True
-  while(not_determinise):
-    not_determinise = False
-    for stateIndex in a.statesdict.copy().keys():
-      for letter in a.statesdict[stateIndex].transitions:
-        states = a.statesdict[stateIndex].transitions[letter].copy()
-        if len(list(a.statesdict[stateIndex].transitions[letter])) > 1:
-          not_determinise = True
-          new_states = set()
-          for state in list(states):
-            new_states.add(state.name)
-          
+  det = a
+  a = a.deepcopy()
+  det.reset(det.name)
+  accept = False
+  new_states = [set([a.initial.name])]
+  treated_sates = set()
+  acceptstates = []
+  while(bool(new_states)):
+    if(str(new_states[0]) in treated_sates):
+      new_states.remove(new_states[0])
+    else:
+      for letter in a.alphabet:
+        new_state = set()
+        for state in new_states[0]:
+          if(a.statesdict[state].is_accept):
+            accept = True
+          if(letter in a.statesdict[state].transitions.keys()):
+            for trans_state in list(a.statesdict[state].transitions[letter]):
+              new_state.add(trans_state.name)
+        if(accept):
+            acceptstates.append(str(new_states[0]))
+            accept = False
+        if(bool(new_state)):
+          det.add_transition(str(new_states[0]), letter, str(new_state))
+          new_states.append(new_state)
+      treated_sates.add(str(new_states[0]))
+      new_states.remove(new_states[0])
+  det.make_accept(acceptstates)
+  a.remove_unreachable()
 
-          for state in list(states):
-            for trans_lettre in state.transitions:
-              for trans_state in list(state.transitions[trans_lettre]):
-                a.add_transition(str(new_states), trans_lettre, trans_state.name)
-                if(state.is_accept):
-                  a.make_accept(str(new_states))
-          a.add_transition(stateIndex, letter, str(new_states))
-          for state in states:
-            print(a.alphabet)
-            a.remove_transition(stateIndex, letter, state.name)
-    a.remove_unreachable()
-    a.to_graphviz("test/"+a.name+"_det.gv")
+  #rename states
+  #some line of code that assert that the initial state has index 0 and finales states have the big indexes
+
+  endIndex = len(det.states) - 1
+  startIndex = 1
+  det.rename_state(det.initial.name, str(0))
+  states = set(det.statesdict.copy().keys())
+  states.remove(det.initial.name)
+  for state in det.acceptstates:
+    if state in states:
+        det.rename_state(state, str(endIndex))
+        states.remove(state)
+        endIndex = endIndex - 1
+  for letter in det.statesdict[det.initial.name].transitions:
+    for state in det.statesdict[det.initial.name].transitions[letter]:
+      name = state.name
+      if state.name in states:
+        det.rename_state(state.name, str(startIndex))
+        states.remove(name)
+        startIndex = startIndex + 1
+  
+  for state in states:
+    det.rename_state(state, str(startIndex))
+    startIndex = startIndex + 1
+
 
   
 ################## 

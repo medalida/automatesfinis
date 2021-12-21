@@ -1,0 +1,32 @@
+digraph finite_state_machine {
+  rankdir=LR;  
+  size="8,5"  label="(a+(c+b))(a+(c+b))ef*"  node [shape = doublecircle]; "10" "12";
+  node [shape = circle];
+  __I__ [label="", style=invis, width=0]
+  __I__ -> "7"
+  "7" -> "0" [label = ε];
+  "7" -> "4" [label = ε];
+  "0" -> "1" [label = a];
+  "4" -> "5" [label = ε];
+  "4" -> "2" [label = ε];
+  "1" -> "13" [label = ε];
+  "5" -> "6" [label = c];
+  "2" -> "3" [label = b];
+  "6" -> "13" [label = ε];
+  "3" -> "13" [label = ε];
+  "13" -> "14" [label = ε];
+  "13" -> "15" [label = ε];
+  "14" -> "16" [label = a];
+  "15" -> "17" [label = ε];
+  "15" -> "18" [label = ε];
+  "8" -> "9" [label = e];
+  "9" -> "10" [label = ε];
+  "10" -> "11" [label = ε];
+  "11" -> "12" [label = f];
+  "12" -> "11" [label = ε];
+  "16" -> "8" [label = ε];
+  "17" -> "19" [label = c];
+  "18" -> "20" [label = b];
+  "19" -> "8" [label = ε];
+  "20" -> "8" [label = ε];
+}

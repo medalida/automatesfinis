@@ -1,0 +1,58 @@
+digraph finite_state_machine {
+  rankdir=LR;  
+  size="8,5"  label="(a*+(c+b*)*)*(a*+((c+b)*+a))e"  node [shape = doublecircle]; "14";
+  node [shape = circle];
+  __I__ [label="", style=invis, width=0]
+  __I__ -> "11"
+  "11" -> "10" [label = ε];
+  "11" -> "12" [label = ε];
+  "10" -> "2" [label = ε];
+  "10" -> "6" [label = ε];
+  "2" -> "0" [label = ε];
+  "2" -> "10" [label = ε];
+  "2" -> "12" [label = ε];
+  "6" -> "5" [label = ε];
+  "6" -> "10" [label = ε];
+  "6" -> "12" [label = ε];
+  "0" -> "1" [label = a];
+  "5" -> "7" [label = ε];
+  "5" -> "8" [label = ε];
+  "1" -> "0" [label = ε];
+  "1" -> "10" [label = ε];
+  "1" -> "12" [label = ε];
+  "7" -> "9" [label = c];
+  "8" -> "3" [label = ε];
+  "8" -> "5" [label = ε];
+  "8" -> "10" [label = ε];
+  "8" -> "12" [label = ε];
+  "9" -> "5" [label = ε];
+  "9" -> "10" [label = ε];
+  "9" -> "12" [label = ε];
+  "3" -> "4" [label = b];
+  "4" -> "3" [label = ε];
+  "4" -> "5" [label = ε];
+  "4" -> "10" [label = ε];
+  "4" -> "12" [label = ε];
+  "12" -> "15" [label = ε];
+  "12" -> "16" [label = ε];
+  "15" -> "17" [label = ε];
+  "15" -> "13" [label = ε];
+  "16" -> "18" [label = ε];
+  "16" -> "19" [label = ε];
+  "13" -> "14" [label = e];
+  "17" -> "20" [label = a];
+  "18" -> "21" [label = ε];
+  "18" -> "13" [label = ε];
+  "19" -> "22" [label = a];
+  "20" -> "17" [label = ε];
+  "20" -> "13" [label = ε];
+  "21" -> "23" [label = ε];
+  "21" -> "24" [label = ε];
+  "22" -> "13" [label = ε];
+  "23" -> "25" [label = c];
+  "24" -> "26" [label = b];
+  "25" -> "21" [label = ε];
+  "25" -> "13" [label = ε];
+  "26" -> "21" [label = ε];
+  "26" -> "13" [label = ε];
+}
